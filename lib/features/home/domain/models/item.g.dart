@@ -15,7 +15,7 @@ extension GetItemCollection on Isar {
 
 const ItemSchema = CollectionSchema(
   name: r'Item',
-  id: 7900997316587104717,
+  id: 1,
   properties: {
     r'category': PropertySchema(
       id: 0,
@@ -65,7 +65,7 @@ const ItemSchema = CollectionSchema(
   idName: r'id',
   indexes: {
     r'name': IndexSchema(
-      id: 879695947855722453,
+      id: 2,
       name: r'name',
       unique: false,
       replace: false,
@@ -78,7 +78,7 @@ const ItemSchema = CollectionSchema(
       ],
     ),
     r'location': IndexSchema(
-      id: -2052452620202604545,
+      id: 3,
       name: r'location',
       unique: false,
       replace: false,

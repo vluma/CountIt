@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:countit/features/home/providers/space_provider.dart';
 import 'package:countit/features/home/presentation/widgets/expiry_item_card.dart';
 import 'package:countit/features/home/presentation/widgets/space_card.dart';
@@ -11,6 +12,7 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spaces = ref.watch(spacesProvider);
+    final theme = Theme.of(context);
     
     // Mock临期提醒数据
     final expiryItems = [
@@ -20,83 +22,162 @@ class HomePage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: const Icon(Icons.home),
-        title: const Text('我的空间导航'),
+        title: const Text('有数'),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () {},
+            tooltip: '通知',
+            style: IconButton.styleFrom(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              padding: const EdgeInsets.all(12),
+              backgroundColor: theme.colorScheme.surfaceVariant,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.search_outlined),
             onPressed: () {
               context.push('/inventory');
             },
+            tooltip: '搜索',
+            style: IconButton.styleFrom(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              padding: const EdgeInsets.all(12),
+              backgroundColor: theme.colorScheme.surfaceVariant,
+            ),
           ),
         ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 欢迎和快速搜索
-              Text(
-                '欢迎回来，今天想找什么？',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                decoration: InputDecoration(
-                  hintText: '快速搜索储备...',
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-              ),
-              
               const SizedBox(height: 24),
               
-              // 临期提醒
-              Text(
-                '临期提醒',
-                style: Theme.of(context).textTheme.titleMedium,
+              // 欢迎区域
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '欢迎回来！',
+                    style: theme.textTheme.headlineLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '今天想找什么储备？',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      height: 1.5,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
+              
+              // 临期提醒
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '临期提醒',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // 查看全部临期商品
+                    },
+                    child: Text(
+                      '查看全部',
+                      style: TextStyle(color: theme.colorScheme.primary),
+                    ),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
               SizedBox(
-                height: 100,
+                height: 160,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: expiryItems.length,
                   itemBuilder: (context, index) {
                     final item = expiryItems[index];
-                    return ExpiryItemCard(
-                      name: item['name'] as String,
-                      daysLeft: item['daysLeft'] as int?,
-                      hoursLeft: item['hoursLeft'] as int?,
+                    return Padding(
+                      padding: EdgeInsets.only(right: index == expiryItems.length - 1 ? 0 : 16),
+                      child: ExpiryItemCard(
+                        name: item['name'] as String,
+                        daysLeft: item['daysLeft'] as int?,
+                        hoursLeft: item['hoursLeft'] as int?,
+                      ),
                     );
                   },
                 ),
               ),
               
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               
               // 存储区域
-              Text(
-                '存储区域',
-                style: Theme.of(context).textTheme.titleMedium,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '存储区域',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // 管理存储区域
+                    },
+                    child: Text(
+                      '管理',
+                      style: TextStyle(color: theme.colorScheme.primary),
+                    ),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               spaces.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stackTrace) => Center(child: Text('加载失败: $error')),
+                error: (error, stackTrace) => Center(
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        '加载失败: $error',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.error,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
                 data: (spacesData) {
                   return GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      crossAxisSpacing: 16.0,
-                      mainAxisSpacing: 16.0,
-                      childAspectRatio: 1.0,
+                      crossAxisSpacing: 20.0,
+                      mainAxisSpacing: 20.0,
+                      childAspectRatio: 1.2,
                     ),
                     itemCount: spacesData.length,
                     itemBuilder: (context, index) {
@@ -115,48 +196,34 @@ class HomePage extends ConsumerWidget {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // 导航到添加物品页面
-          context.push('/add-item');
-        },
-        tooltip: '添加物品',
-        child: const Icon(Icons.add),
-        shape: const CircleBorder(),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '首页',
+
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              context.push('/add-item');
+            },
+            tooltip: '新增储备',
+            child: const Icon(Icons.add),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '我的',
+          const SizedBox(height: 12),
+          FloatingActionButton(
+            onPressed: () {
+              context.push('/settings');
+            },
+            tooltip: '设置',
+            child: const Icon(Icons.settings),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
           ),
         ],
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              // 首页
-              break;
-            case 1:
-              // 添加物品
-              context.push('/add-item');
-              break;
-            case 2:
-              // 我的
-              context.push('/settings');
-              break;
-          }
-        },
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
