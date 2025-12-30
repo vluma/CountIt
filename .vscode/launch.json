@@ -20,7 +20,7 @@
             "type": "dart",
             "flutterMode": "profile"
         },
-        {
+        {     
             "name": "countit (release mode)",
             "request": "launch",
             "type": "dart",

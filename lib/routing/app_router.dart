@@ -4,12 +4,24 @@ import 'package:countit/features/item_detail/presentation/pages/item_detail_page
 import 'package:countit/features/inventory/presentation/pages/add_item_page.dart';
 import 'package:countit/features/inventory/presentation/pages/inventory_page.dart';
 import 'package:countit/features/settings/presentation/pages/settings_page.dart';
+import 'package:countit/features/auth/presentation/pages/login_page.dart';
+import 'package:countit/features/auth/presentation/pages/register_page.dart';
 
 class AppRouter {
   GoRouter get router {
     return GoRouter(
-      initialLocation: '/',
+      initialLocation: '/login',
       routes: [
+        GoRoute(
+          path: '/login',
+          name: 'login',
+          builder: (context, state) => const LoginPage(),
+        ),
+        GoRoute(
+          path: '/register',
+          name: 'register',
+          builder: (context, state) => const RegisterPage(),
+        ),
         GoRoute(
           path: '/',
           name: 'home',
