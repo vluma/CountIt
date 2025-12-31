@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:countit/features/auth/domain/services/wechat_auth_service.dart';
+import 'package:countit/services/api_service.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -25,26 +26,43 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   Future<void> _handleLogin() async {
-    if (!_formKey.currentState!.validate()) {
+    // 再次检查表单状态，确保安全
+    if (!_formKey.currentState!.validate() || _isLoading) {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
-
     try {
-      await Future.delayed(const Duration(seconds: 1));
+      setState(() {
+        _isLoading = true;
+      });
+
+      final userInfo = await ApiService.login(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+      
       if (mounted) {
-        context.go('/');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('登录成功')),
+        );
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (mounted) {
+          context.go('/');
+        }
       }
     } catch (e) {
       if (mounted) {
+        // 清理异常信息，只显示有用的部分
+        String errorMessage = e.toString();
+        if (errorMessage.startsWith('Exception:')) {
+          errorMessage = errorMessage.substring(10);
+        }
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('登录失败: $e')),
+          SnackBar(content: Text(errorMessage)),
         );
       }
     } finally {
+      // 确保无论如何都重置加载状态
       if (mounted) {
         setState(() {
           _isLoading = false;

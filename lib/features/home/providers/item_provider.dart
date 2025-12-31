@@ -5,7 +5,15 @@ import 'package:countit/services/database_service.dart';
 class ItemNotifier extends AsyncNotifier<List<Item>> {
   @override
   Future<List<Item>> build() async {
-    return await DatabaseService().getItems();
+    // 确保数据库初始化完成后再查询
+    try {
+      // 使用Future.delayed给数据库初始化一些时间
+      await Future.delayed(const Duration(milliseconds: 100));
+      return await DatabaseService().getItems();
+    } catch (e) {
+      print('获取物品列表失败: $e');
+      return []; // 返回空列表而不是抛出错误，避免UI崩溃
+    }
   }
 
   Future<void> addItem(Item item) async {

@@ -23,20 +23,24 @@ class DatabaseService {
   }
 
   Future<void> _initializeDefaultSpaces() async {
-    final spaces = [
+    // 批量检查现有空间，减少数据库查询次数
+    final existingSpaces = await _isar!.spaces.where().findAll();
+    final existingNames = existingSpaces.map((s) => s.name).toSet();
+
+    final spacesToAdd = [
       Space(name: '客厅', icon: '🏠', itemCount: 120),
       Space(name: '厨房', icon: '🍳', itemCount: 45),
       Space(name: '卧室', icon: '🛏️', itemCount: 88),
       Space(name: '储物间', icon: '📦', itemCount: 210),
-    ];
+    ].where((space) => !existingNames.contains(space.name)).toList();
 
-    for (final space in spaces) {
-      final existing = await _isar!.spaces.where().nameEqualTo(space.name).findFirst();
-      if (existing == null) {
-        await _isar!.writeTxn(() async {
+    // 批量写入，减少事务次数
+    if (spacesToAdd.isNotEmpty) {
+      await _isar!.writeTxn(() async {
+        for (final space in spacesToAdd) {
           await _isar!.spaces.put(space);
-        });
-      }
+        }
+      });
     }
   }
 

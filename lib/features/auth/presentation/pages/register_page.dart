@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:countit/services/api_service.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
@@ -50,25 +51,47 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     }
 
     setState(() {
-      _isCodeSent = true;
-      _countdown = 60;
+      _isLoading = true;
     });
 
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    try {
+      await ApiService.sendVerificationCode(_emailController.text);
+      
       setState(() {
-        if (_countdown > 0) {
-          _countdown--;
-        } else {
-          _timer?.cancel();
-          _isCodeSent = false;
-        }
+        _isCodeSent = true;
+        _countdown = 60;
       });
-    });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('验证码已发送')),
-    );
+      _timer?.cancel();
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        setState(() {
+          if (_countdown > 0) {
+            _countdown--;
+          } else {
+            _timer?.cancel();
+            _isCodeSent = false;
+          }
+        });
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('验证码已发送')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('发送验证码失败: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   Future<void> _handleRegister() async {
@@ -103,14 +126,19 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     });
 
     try {
-      await Future.delayed(const Duration(seconds: 1));
+      final userInfo = await ApiService.register(
+        _emailController.text,
+        _passwordController.text,
+        _verificationCodeController.text,
+      );
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('注册成功')),
         );
         await Future.delayed(const Duration(milliseconds: 500));
         if (mounted) {
-          context.go('/login');
+          context.go('/');
         }
       }
     } catch (e) {
