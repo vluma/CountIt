@@ -1,11 +1,20 @@
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:countit/features/home/presentation/pages/home_page.dart';
+import 'package:countit/features/home/presentation/pages/main_container_page.dart';
 import 'package:countit/features/item_detail/presentation/pages/item_detail_page.dart';
 import 'package:countit/features/inventory/presentation/pages/add_item_page.dart';
 import 'package:countit/features/inventory/presentation/pages/inventory_page.dart';
 import 'package:countit/features/settings/presentation/pages/settings_page.dart';
 import 'package:countit/features/auth/presentation/pages/login_page.dart';
 import 'package:countit/features/auth/presentation/pages/register_page.dart';
+import 'package:countit/features/profile/presentation/pages/profile_page.dart';
+import 'package:countit/services/user_service.dart';
+
+// 用于监听登录状态变化的Provider
+final authStateProvider = FutureProvider<bool>((ref) async {
+  return await UserService.isLoggedIn();
+});
 
 class AppRouter {
   GoRouter get router {
@@ -25,7 +34,7 @@ class AppRouter {
         GoRoute(
           path: '/',
           name: 'home',
-          builder: (context, state) => const HomePage(),
+          builder: (context, state) => const MainContainerPage(),
         ),
         GoRoute(
           path: '/item/:id',
@@ -46,6 +55,11 @@ class AppRouter {
           path: '/settings',
           name: 'settings',
           builder: (context, state) => const SettingsPage(),
+        ),
+        GoRoute(
+          path: '/profile',
+          name: 'profile',
+          builder: (context, state) => const ProfilePage(),
         ),
       ],
     );

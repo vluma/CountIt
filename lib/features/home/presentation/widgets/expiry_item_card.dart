@@ -17,7 +17,7 @@ class ExpiryItemCard extends StatelessWidget {
     final theme = Theme.of(context);
     
     return Card(
-      elevation: 0,
+      elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.0),
       ),
@@ -35,7 +35,7 @@ class ExpiryItemCard extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                theme.colorScheme.surfaceVariant,
+                theme.colorScheme.surfaceContainerHighest.withOpacity(0.8),
                 theme.colorScheme.surface,
               ],
             ),
@@ -43,6 +43,20 @@ class ExpiryItemCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // 警告图标
+              Container(
+                padding: const EdgeInsets.all(8),
+                margin: const EdgeInsets.only(bottom: 8),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.error.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.warning_amber_rounded,
+                  color: theme.colorScheme.error,
+                  size: 28,
+                ),
+              ),
               Text(
                 name,
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -53,7 +67,7 @@ class ExpiryItemCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               Text(
                 daysLeft != null
                     ? '剩 $daysLeft 天'
@@ -61,7 +75,7 @@ class ExpiryItemCard extends StatelessWidget {
                 style: TextStyle(
                   color: theme.colorScheme.error,
                   fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                  fontSize: 20,
                 ),
                 textAlign: TextAlign.center,
               ),

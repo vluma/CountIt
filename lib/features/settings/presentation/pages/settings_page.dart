@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:countit/core/theme/theme_provider.dart';
+import 'package:countit/features/home/providers/home_settings_provider.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -15,7 +17,13 @@ class SettingsPage extends ConsumerWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            // 检查当前路由是否是根路由，如果是则导航到首页，否则返回上一页
+            final router = GoRouter.of(context);
+            if (router.canPop()) {
+              context.pop();
+            } else {
+              context.go('/');
+            }
           },
         ),
         title: const Text('设置'),
@@ -69,6 +77,45 @@ class SettingsPage extends ConsumerWidget {
                           themeNotifier.setTheme(value);
                         }
                       },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16.0),
+
+            // 首页模块设置
+            Card(
+              elevation: 2.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '首页模块设置',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    SwitchListTile(
+                      title: const Text('显示临期提醒'),
+                      value: ref.watch(homeSettingsProvider).showExpiryReminder,
+                      onChanged: (value) {
+                        ref.read(homeSettingsProvider.notifier).toggleExpiryReminder();
+                      },
+                      activeColor: Theme.of(context).colorScheme.primary,
+                    ),
+                    SwitchListTile(
+                      title: const Text('显示存储区域'),
+                      value: ref.watch(homeSettingsProvider).showStorageArea,
+                      onChanged: (value) {
+                        ref.read(homeSettingsProvider.notifier).toggleStorageArea();
+                      },
+                      activeColor: Theme.of(context).colorScheme.primary,
                     ),
                   ],
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:countit/features/home/providers/item_provider.dart';
 
 class ItemDetailPage extends ConsumerWidget {
@@ -16,7 +17,13 @@ class ItemDetailPage extends ConsumerWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            // 检查当前路由是否是根路由，如果是则导航到首页，否则返回上一页
+            final router = GoRouter.of(context);
+            if (router.canPop()) {
+              context.pop();
+            } else {
+              context.go('/');
+            }
           },
         ),
         title: const Text('物品详情'),

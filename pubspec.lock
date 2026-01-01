@@ -249,6 +249,14 @@ packages:
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
     version: "2.1.1"
+  dot_curved_bottom_nav:
+    dependency: "direct main"
+    description:
+      name: dot_curved_bottom_nav
+      sha256: d4a06b8aa3bd7820d538b2c685300f4eaec7d1c224c077deb7c8cdd68845aae9
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.0.2"
   dot_navigation_bar:
     dependency: "direct main"
     description:

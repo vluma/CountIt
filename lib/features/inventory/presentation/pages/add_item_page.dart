@@ -112,7 +112,12 @@ class _AddItemPageState extends ConsumerState<AddItemPage> {
 
       await DatabaseService().addItem(item);
       if (mounted) {
-        context.pop();
+        final router = GoRouter.of(context);
+        if (router.canPop()) {
+          context.pop();
+        } else {
+          context.go('/');
+        }
       }
     }
   }
@@ -151,7 +156,12 @@ class _AddItemPageState extends ConsumerState<AddItemPage> {
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () {
-            context.pop();
+            final router = GoRouter.of(context);
+            if (router.canPop()) {
+              context.pop();
+            } else {
+              context.go('/');
+            }
           },
         ),
         title: const Text('新增物品'),
@@ -164,7 +174,7 @@ class _AddItemPageState extends ConsumerState<AddItemPage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 96.0),
           child: Form(
             key: _formKey,
             child: Column(
